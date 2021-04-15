@@ -14,7 +14,6 @@ int main(int ac, char **av)
 	try
 	{
 		Convert test(av[1]);
-		test.checkArg();
 		display(test);
 	}
 	catch(const std::exception& e)

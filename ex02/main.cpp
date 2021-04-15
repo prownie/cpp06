@@ -69,4 +69,5 @@ int main()
 	identify_from_pointer(prand);
 	std::cout << "par ref = ";
 	identify_from_reference(*prand);
+	delete prand;
 }

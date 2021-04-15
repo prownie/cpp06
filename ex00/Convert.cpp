@@ -22,15 +22,18 @@ void		Convert::checkArg( void ) const
 	int i = 0;
 	if (!_isLitteral)
 	{
-		while(isspace(_value[i]))
-			i++;
-		if ((_value[i] == '-' || _value[i] == '+'))
+		if (_value.length() != 1)
 		{
-			if (!isdigit(_value[i + 1]))
-				throw BadParamException();
+			while(isspace(_value[i]))
+				i++;
+			if ((_value[i] == '-' || _value[i] == '+'))
+			{
+				if (!isdigit(_value[i + 1]))
+					throw ImpossibleConvException();
+			}
+			else if (!isdigit(_value[i]))
+				throw ImpossibleConvException();
 		}
-		else if (!isdigit(_value[i]))
-			throw BadParamException();
 	}
 }
 
@@ -38,22 +41,29 @@ void		Convert::convLiterral( void )
 {
 	std::string literrals[] = {"-inff", "+inff", "nanf", "-inf", "+inf", "nan", "inf", "inff"};
 
+	if (_value.length() == 1 && !isdigit(_value[0]))
+	{
+		_dvalue = static_cast<double>(_value[0]);
+		_fvalue = static_cast<float>(_dvalue);
+		_ivalue = static_cast<int>(_dvalue);
+		return ;
+	}
 	for (int i = 0; i < static_cast<int>(sizeof(literrals)/sizeof(literrals[0])) ; i++)
 		if (_value == literrals[i])
 			_isLitteral = true;
 	if (_isLitteral)
 	{
-		_dvalue = std::atof(_value.c_str());
+		_dvalue = strtod(_value.c_str(), NULL);
 		if (errno)
-			throw ImpossibleConvExceptin();
-		_fvalue = (float) _dvalue;
-		_ivalue = std::atoi(_value.c_str());
+			throw ImpossibleConvException();
+		_fvalue = static_cast<float>(_dvalue);
+		_ivalue = static_cast<int>(_dvalue);
  	}
 	else
 	{
-		_dvalue = std::atof(_value.c_str());
+		_dvalue = strtod(_value.c_str(), NULL);
 		if (errno)
-			throw ImpossibleConvExceptin();
+			throw ImpossibleConvException();
 		_fvalue = (float) _dvalue;
 		_ivalue = std::atoi(_value.c_str());
 	}
@@ -64,7 +74,7 @@ Convert::~Convert() {}
 Convert::operator char() const
 {
 	if (_isLitteral)
-		throw ImpossibleConvExceptin();
+		throw ImpossibleConvException();
 	else
 		return _ivalue;
 }
@@ -82,12 +92,17 @@ Convert::operator float() const
 Convert::operator int() const
 {
 	if (_isLitteral)
-		throw ImpossibleConvExceptin();
+		throw ImpossibleConvException();
 	else
 		return _ivalue;
 }
 
-char const * Convert::ImpossibleConvExceptin::what( void ) const throw()
+int Convert::getValueLength( void ) const
+{
+	return _value.length();
+}
+
+char const * Convert::ImpossibleConvException::what( void ) const throw()
 {
 	return "impossible";
 }

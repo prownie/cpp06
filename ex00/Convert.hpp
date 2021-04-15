@@ -26,9 +26,10 @@ public:
 	operator	double() const;
 	int			isnan(double x) const;
 	int			isinf(double x) const;
+	int			getValueLength( void ) const;
 	void		convLiterral( void );
 	void		checkArg( void ) const;
-	class ImpossibleConvExceptin : public std::exception
+	class ImpossibleConvException : public std::exception
 	{
 		public :
 			virtual char const * what( void ) const throw();
